@@ -4,6 +4,7 @@ import { polygonAmoy } from 'thirdweb/chains';
 
 export const predictionMarketContractAddress =
   '0xD03E0AbA3f568942184C4Ec22696453d1a29Db89';
+
 export const tokenContractAddress =
   '0x16771a901A5D5a85b3B1CC49F723723cdC0B90E5';
 
