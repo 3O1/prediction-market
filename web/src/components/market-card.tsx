@@ -12,6 +12,8 @@ import MarketCardSkeleton from './skeleton-card';
 import { MarketProgress } from './market-progress';
 import { MarketBuyInterface } from './market-buy-interface';
 import { MarketSharesDisplay } from './market-shares';
+import { MarketResolved } from './market-resolved';
+import { MarketPending } from './market-pending';
 
 interface MarketCardProps {
   index: number;
@@ -125,10 +127,15 @@ export default function MarketCard({ index, filter }: MarketCardProps) {
             {new Date(Number(market?.endTime) * 1000) < new Date() ? (
               market?.resolved ? (
                 // market resolved content
-                <></>
+                <MarketResolved
+                  marketId={index}
+                  outcome={market.outcome}
+                  optionA={market.optionA}
+                  optionB={market.optionB}
+                />
               ) : (
                 // market pending content
-                <></>
+                <MarketPending />
               )
             ) : (
               // market buy interface
