@@ -113,7 +113,7 @@ contract SimplePredictionMarket is Ownable, ReentrancyGuard {
             market.optionASharesBalance[msg.sender] += _amount;
             market.totalOptionAShares += _amount;
         } else {
-            market.optionASharesBalance[msg.sender] += _amount;
+            market.optionBSharesBalance[msg.sender] += _amount;
             market.totalOptionBShares += _amount;
         }
 
@@ -126,10 +126,88 @@ contract SimplePredictionMarket is Ownable, ReentrancyGuard {
         require(block.timestamp >= market.endTime, "Market hasn't ended yet");
         require(!market.resolved, "Market already resolved");
         require(_outcome != MarketOutcome.UNRESOLVED, "Invalid outcome");
-        
+
         market.outcome = _outcome;
         market.resolved = true;
 
         emit MarketResolved(_marketId, _outcome);
+    }
+
+    function claimWinnings(uint256 _marketId) external {
+        Market storage market = markets[_marketId];
+        require(market.resolved, "Market not resolved yet");
+
+        uint256 userShares;
+        uint256 winningShares;
+        uint256 losingShares;
+
+        if (market.outcome == MarketOutcome.OPTION_A) {
+            userShares = market.optionASharesBalance[msg.sender];
+            winningShares = market.totalOptionAShares;
+            losingShares = market.totalOptionBShares;
+            market.optionASharesBalance[msg.sender] = 0;
+        } else if (market.outcome == MarketOutcome.OPTION_B) {
+            userShares = market.optionBSharesBalance[msg.sender];
+            winningShares = market.totalOptionBShares;
+            losingShares = market.totalOptionAShares;
+            market.optionBSharesBalance[msg.sender] = 0;
+        } else {
+            revert("Market outcome is not valid");
+        }
+
+        require(userShares > 0, "No winnings to claim");
+
+        // calculate the reward ratio
+        uint256 rewardRatio = (losingShares * 1e18) / winningShares; // using 1e18 for precision
+
+        // calculate winnings: original stake + proportional share of losing funds
+        uint256 winnings = userShares + (userShares * rewardRatio) / 1e18;
+
+        require(
+            bettingToken.transfer(msg.sender, winnings),
+            "Token transfer failed"
+        );
+
+        emit Claimed(_marketId, msg.sender, winnings);
+    }
+
+    function getMarketInfo(
+        uint256 _marketId
+    )
+        external
+        view 
+        returns (
+            string memory question,
+            string memory optionA,
+            string memory optionB,
+            uint256 endTime,
+            MarketOutcome outcome,
+            uint256 totalOptionAShares,
+            uint256 totalOptionBShares,
+            bool resolved
+        )
+     {
+        Market storage market = markets[_marketId];
+        return (
+            market.question,
+            market.optionA,
+            market.optionB,
+            market.endTime,
+            market.outcome,
+            market.totalOptionAShares,
+            market.totalOptionBShares,
+            market.resolved
+        );
+    }
+
+    function getSharesBalance(
+        uint256 _marketId,
+        address _user
+    ) external view returns (uint256 optionAShares, uint256 optionBShares) {
+        Market storage market = markets[_marketId];
+        return (
+            market.optionASharesBalance[_user],
+            market.optionBSharesBalance[_user]
+        );
     }
 }
