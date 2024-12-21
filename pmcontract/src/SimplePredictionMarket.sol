@@ -53,6 +53,10 @@ contract SimplePredictionMarket is Ownable, ReentrancyGuard {
         address indexed user,
         uint256 amount
     );
+
+    function _canSetOwner() internal view virtual override returns (bool) {
+        return msg.sender == owner();
+    }
     
     constructor(address _bettingToken) {
         bettingToken = IERC20(_bettingToken);
