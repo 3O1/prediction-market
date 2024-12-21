@@ -11,6 +11,7 @@ import { MarketTime } from './market-time';
 import MarketCardSkeleton from './skeleton-card';
 import { MarketProgress } from './market-progress';
 import { MarketBuyInterface } from './market-buy-interface';
+import { MarketSharesDisplay } from './market-shares';
 
 interface MarketCardProps {
   index: number;
@@ -137,7 +138,10 @@ export default function MarketCard({ index, filter }: MarketCardProps) {
           <CardFooter>
             {market && sharesBalance && (
               // market share component
-              <></>
+              <MarketSharesDisplay
+                market={market}
+                sharesBalance={sharesBalance}
+              />
             )}
           </CardFooter>
         </>

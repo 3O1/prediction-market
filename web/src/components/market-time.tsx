@@ -1,17 +1,9 @@
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 
 interface MarketTimeProps {
   endTime: bigint;
   className?: string;
 }
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
 
 export function MarketTime({ endTime, className }: MarketTimeProps) {
   const isEnded = new Date(Number(endTime) * 1000) < new Date();

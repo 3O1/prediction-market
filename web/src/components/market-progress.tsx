@@ -27,16 +27,18 @@ export function MarketProgress({
           </span>
           {totalShares > 0 && (
             <span className="text-xs text-gray-500">
+              {' '}
               {Math.floor(yesPercentage)}%
             </span>
           )}
         </span>
         <span>
-          <span className="font-bold text-xs">
+          <span className="font-bold text-sm">
             {optionB}: {Math.floor(parseInt(toEther(totalOptionBShares)))}
           </span>
           {totalShares > 0 && (
             <span className="text-xs text-gray-500">
+              {' '}
               {Math.floor(100 - yesPercentage)}%
             </span>
           )}
